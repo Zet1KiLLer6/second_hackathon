@@ -1,0 +1,10 @@
+djangorestframework
+psycopg2-binary
+python-decouple
+djangorestframework-simplejwt
+drf_yasg
+django-filter
+pillow
+#aiogram
+#beautifulsoup4
+#requests
