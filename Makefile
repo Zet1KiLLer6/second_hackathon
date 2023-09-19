@@ -1,7 +1,7 @@
 run:
-	python3 manage.py runserver
+	python manage.py runserver
 migrate:
-	python3 mamage.py makemigrations
-	python3 manage.py migrate
+	python manage.py makemigrations
+	python manage.py migrate
 user:
-	python3 manage.py createsuper
+	python manage.py createsuperuser
