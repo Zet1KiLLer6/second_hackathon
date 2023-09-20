@@ -45,7 +45,8 @@ INSTALLED_APPS = [
     'drf_yasg',
     'django_filters',
 
-    # 'applications.',
+    # apps
+    'applications.account',
     'applications.product',
     'applications.feedback',
 ]
@@ -139,7 +140,7 @@ MEDIA_ROOT = BASE_DIR / 'media/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# AUTH_USER_MODEL = 'account.CustomUser'
+AUTH_USER_MODEL = 'account.User'
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
