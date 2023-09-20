@@ -43,11 +43,11 @@ class ChangePasswordAPIView(APIView):
             old_password = serializer.validated_data.get('old_password')
             new_password = serializer.validated_data.get('new_password')
 
-            # Проверяем старый пароль пользователя
+
             if not user.check_password(old_password):
                 return Response({'detail': 'Старый пароль неверен'}, status=status.HTTP_400_BAD_REQUEST)
 
-            # Устанавливаем новый пароль и сохраняем пользователя
+
             user.set_password(new_password)
             user.save()
 
