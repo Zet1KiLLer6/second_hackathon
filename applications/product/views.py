@@ -33,3 +33,4 @@ class SpecAPIView(viewsets.ModelViewSet):
 class ProductAPIView(viewsets.ModelViewSet):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
+    filters_backend = [DjangoFilterBackend, SearchFilter, OrderingFilter]

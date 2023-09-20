@@ -52,6 +52,7 @@ class Product(CreatedUpdatedModelMixin):
     description = models.TextField()
     price = models.PositiveIntegerField()
     available = models.PositiveIntegerField()
+    views = models.PositiveIntegerField(default=0)
     cat = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='products')
     specs = models.ManyToManyField(Spec, related_name='products', blank=True)
 

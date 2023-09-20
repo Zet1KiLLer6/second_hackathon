@@ -5,3 +5,6 @@ migrate:
 	python3 manage.py migrate
 user:
 	python3 manage.py createsuper
+dbres:
+	dropdb $(d)
+	createdb $(d)
