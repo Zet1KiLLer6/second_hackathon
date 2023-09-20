@@ -2,7 +2,7 @@ from rest_framework import serializers
 from django.db.models import Avg
 
 from .models import Category, SpecName, Spec, Product
-from ..feedback.serializers import LikeSerializer, CommentSerializer, ProductImageSerializer
+from ..feedback.serializers import LikeSerializer, CommentSerializer
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -41,7 +41,6 @@ class ProductSerializer(serializers.ModelSerializer):
     likes = LikeSerializer(many=True, read_only=True)
     owner = serializers.ReadOnlyField(source="owner.email")
     comments = CommentSerializer(many=True, read_only=True)
-    images = ProductImageSerializer(many=True, read_only=True)
     slug = serializers.ReadOnlyField()
 
     class Meta:

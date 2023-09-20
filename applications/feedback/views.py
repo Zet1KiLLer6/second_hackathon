@@ -3,7 +3,7 @@ from rest_framework.pagination import PageNumberPagination
 
 from applications.feedback.models import Comment
 from applications.feedback.serializers import CommentSerializer
-from applications.feedback.permissions import IsAuthenticatedOrIsOwner
+from applications.feedback.permissions import IsAuthenticatedOrIsOwnerOrAdmin
 
 
 class LargeResultsSetPagination(PageNumberPagination):
@@ -15,7 +15,7 @@ class LargeResultsSetPagination(PageNumberPagination):
 class CommentModelViewSet(viewsets.ModelViewSet):
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
-    permission_classes =[IsAuthenticatedOrIsOwner]
+    permission_classes =[IsAuthenticatedOrIsOwnerOrAdmin]
 
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
