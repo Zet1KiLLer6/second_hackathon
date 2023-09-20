@@ -46,8 +46,8 @@ INSTALLED_APPS = [
     'django_filters',
 
     # 'applications.',
-
     'applications.product',
+    'applications.feedback',
 ]
 
 MIDDLEWARE = [
