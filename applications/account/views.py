@@ -5,8 +5,8 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.permissions import IsAuthenticated
-from applications.account.serializers import RegisterSerializer, LoginSerializer
-
+from applications.account.permissions import IsOwnerOrReadOnly
+from applications.account.serializers import RegisterSerializer, LoginSerializer, ChangePasswordSerializer
 
 User = get_user_model()
 
@@ -26,3 +26,33 @@ class ActivationAPIView(APIView):
         user.code = ''
         user.save(update_fields=('is_active', 'code'))
         return Response('Регистрация прошла успешно!', status=200)
+
+
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from rest_framework.permissions import IsAuthenticated
+
+class ChangePasswordAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        serializer = ChangePasswordSerializer(data=request.data)
+        if serializer.is_valid():
+            user = request.user
+            old_password = serializer.validated_data.get('old_password')
+            new_password = serializer.validated_data.get('new_password')
+
+            # Проверяем старый пароль пользователя
+            if not user.check_password(old_password):
+                return Response({'detail': 'Старый пароль неверен'}, status=status.HTTP_400_BAD_REQUEST)
+
+            # Устанавливаем новый пароль и сохраняем пользователя
+            user.set_password(new_password)
+            user.save()
+
+            return Response({'detail': 'Пароль успешно изменен'}, status=status.HTTP_200_OK)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
