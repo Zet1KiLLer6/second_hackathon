@@ -1,6 +1,7 @@
 from rest_framework import viewsets
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import OrderingFilter, SearchFilter
+from rest_framework.permissions import IsAdminUser
 
 from .models import Category, SpecName, Spec, Product
 from .serializers import CategorySerializer, SpecNameSerializer, SpecSerializer, ProductSerializer

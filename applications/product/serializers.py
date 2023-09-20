@@ -51,3 +51,8 @@ class ProductSerializer(serializers.ModelSerializer):
             'specs': SpecSerializer(instance.specs.all(), many=True).data
         })
         return rep
+
+    def validate(self, attrs):
+        if attrs.get('images', None):
+            serializers.ValidationError({'images': ['required']})
+        return attrs

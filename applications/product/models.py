@@ -63,3 +63,9 @@ class Product(CreatedUpdatedModelMixin):
 
     def __str__(self):
         return self.name
+
+
+class ProductImage(models.Model):
+    image = models.ImageField(upload_to='image/')
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='images')
+
