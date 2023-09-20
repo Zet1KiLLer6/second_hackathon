@@ -29,24 +29,6 @@ class RegisterSerializer(serializers.ModelSerializer):
         send_activation_code(user.email, user.code)
         return user
 
-
-class LoginSerializer(serializers.Serializer):
-    email = serializers.EmailField(required=True)
-    password = serializers.CharField(required=True)
-
-    def validate_email(self, email):
-        if User.objects.filter(email=email).exists():  # -> []
-            return email
-        raise serializers.ValidationError('Пользователь с такой почтой не существует!')
-
-    def validate(self, attrs):
-        user = authenticate(username=attrs.get('email'), password=attrs.get('password'))  # user or None
-        if user:
-            attrs['user'] = user
-            return attrs
-        raise serializers.ValidationError('Пароль неверный!')
-
-
 class ChangePasswordSerializer(serializers.Serializer):
     old_password = serializers.CharField(required=True)
     new_password = serializers.CharField(required=True)

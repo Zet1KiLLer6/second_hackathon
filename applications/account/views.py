@@ -1,12 +1,11 @@
 from rest_framework.authtoken.models import Token
 from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
+from applications.account.serializers import RegisterSerializer, ChangePasswordSerializer
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework.authtoken.views import ObtainAuthToken
+from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
-from applications.account.permissions import IsOwnerOrReadOnly
-from applications.account.serializers import RegisterSerializer, LoginSerializer, ChangePasswordSerializer
 
 User = get_user_model()
 
@@ -27,11 +26,6 @@ class ActivationAPIView(APIView):
         user.save(update_fields=('is_active', 'code'))
         return Response('Регистрация прошла успешно!', status=200)
 
-
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework import status
-from rest_framework.permissions import IsAuthenticated
 
 class ChangePasswordAPIView(APIView):
     permission_classes = [IsAuthenticated]
