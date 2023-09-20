@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from django.db.models import Avg
 
 from .models import Category, SpecName, Spec, Product
 from ..feedback.serializers import LikeSerializer, CommentSerializer, ProductImageSerializer
@@ -53,18 +54,10 @@ class ProductSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         rep = super().to_representation(instance)
         rep.update({
-            'specs': SpecSerializer(instance.specs.all(), many=True).data
+            'specs': SpecSerializer(instance.specs.all(), many=True).data,
+            'rating': instance.ratings.aggregate(avg_rating=Avg('rating'))['avg_rating']
         })
 
         rep["like_count"] = instance.likes.filter(is_like=True).count()
-
-        rating_result = 0
-        for rating in instance.ratings.all():
-            rating_result += rating.rating
-
-        if rating_result:
-            rep["rating"] = rating_result / instance.ratings.all().count()
-        else:
-            rep["rating"] = 0
 
         return rep

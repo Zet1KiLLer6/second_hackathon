@@ -1,12 +1,5 @@
 from rest_framework import serializers
-from applications.feedback.models import ProductImage, Like, Comment, Rating
-
-
-class ProductImageSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = ProductImage
-        fields = "__all__"
+from applications.feedback.models import Like, Comment, Rating
 
 
 class LikeSerializer(serializers.ModelSerializer):

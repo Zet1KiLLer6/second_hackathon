@@ -56,6 +56,17 @@ class Product(CreatedUpdatedModelMixin):
     specs = models.ManyToManyField(Spec, related_name='products', blank=True)
 
     def save(self, *args, **kwargs):
+        product = Product.objects.create(**validated_data)
+
+        request = self.context.get("request")
+        fiels = request.FILES
+
+        image_objects = []
+        for file in fiels.getlist("images"):
+            image_objects.append(PostImage(post=post, image=file))
+
+        PostImage.objects.bulk_create(image_objects)
+
         if not self.slug:
             self.slug = generate_unique_slug(Product, self.name)
         return super().save(*args, **kwargs)
