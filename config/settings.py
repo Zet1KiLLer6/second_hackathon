@@ -46,9 +46,7 @@ INSTALLED_APPS = [
     'django_filters',
 
     # apps
-    'applications.account'
-    # 'applications.',
-
+    'applications.account',
     'applications.product',
 ]
 
