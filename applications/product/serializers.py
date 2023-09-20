@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import Category, SpecName, Spec, Product
+from .models import Category, SpecName, Spec, Product, ProductImage
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -35,8 +35,15 @@ class SpecNameSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
+class ProductImageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ProductImage
+        fields = "__all__"
+
+
 class ProductSerializer(serializers.ModelSerializer):
     slug = serializers.ReadOnlyField()
+    images = ProductImageSerializer(many=True)
 
     class Meta:
         model = Product

@@ -1,7 +1,7 @@
 from rest_framework import viewsets
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import OrderingFilter, SearchFilter
-from rest_framework.permissions import IsAdminUser
+from rest_framework.permissions import IsAdminUser, AllowAny
 
 from .models import Category, SpecName, Spec, Product
 from .serializers import CategorySerializer, SpecNameSerializer, SpecSerializer, ProductSerializer
@@ -11,6 +11,12 @@ from .serializers import CategorySerializer, SpecNameSerializer, SpecSerializer,
 class CategoryAPIView(viewsets.ModelViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
+    permission_classes = [IsAdminUser]
+
+    def get_permissions(self):
+        if self.action in ['retrieve', 'list']:
+            self.permission_classes = [AllowAny]
+        return super().get_permissions()
 
 
 class SpecNameAPIView(viewsets.ModelViewSet):
