@@ -5,3 +5,8 @@ migrate:
 	python manage.py migrate
 user:
 	python manage.py createsuperuser
+dbres:
+	dropdb $(d)
+	createdb $(d)
+shell:
+	python manage.py shell
