@@ -1,0 +1,30 @@
+version: '3.8'
+
+
+services:
+  django:
+    container_name: djangorestframework
+    build:
+      context: ./
+    command: python manage.py runserver 0.0.0.0:8000
+    ports:
+      - "8001:8000"
+    environment:
+      - SECRET_KEY=dfasi;dfasjdfhjklajsdkf;alsjdf;liowihofhdsf
+      - DEBUG=True
+      - ALLOWED_HOSTS=localhost,127.0.0.1
+
+      - DB_NAME=melornapi
+      - DB_USER=postgres
+      - DB_PASSWORD=1
+      - DB_HOST=db
+      - DB_PORT=5432
+
+      - EMAIL_HOST_USER=py29.hakaton@gmail.com
+      - EMAIL_HOST_PASSWORD=tptorbwqhmssqycf
+  db:
+    image: postgres:15
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=1
+      - POSTGRES_DB=melornapi
