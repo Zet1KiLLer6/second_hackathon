@@ -1,6 +1,8 @@
 from rest_framework import serializers
+from django.db.models import Avg
 
 from .models import Category, SpecName, Spec, Product, ProductImage
+from ..feedback.serializers import LikeSerializer, CommentSerializer
 
 
 class CategoryListSerializer(serializers.ModelSerializer):
@@ -60,6 +62,10 @@ class ProductImageSerializer(serializers.ModelSerializer):
 
 class ProductListSerializer(serializers.ModelSerializer):
     images = ProductImageSerializer(many=True, read_only=True)
+    likes = LikeSerializer(many=True, read_only=True)
+    owner = serializers.ReadOnlyField(source="owner.email")
+    comments = CommentSerializer(many=True, read_only=True)
+    slug = serializers.ReadOnlyField()
 
     class Meta:
         model = Product
@@ -80,7 +86,9 @@ class ProductDetailSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         rep = super().to_representation(instance)
         rep.update({
-            'specs': SpecSerializer(instance.specs.all(), many=True).data
+            'specs': SpecSerializer(instance.specs.all(), many=True).data,
+            'rating': instance.ratings.aggregate(avg_rating=Avg('rating'))['avg_rating'],
+            'likes': instance.likes.filter(is_like=True).count()
         })
         return rep
 
