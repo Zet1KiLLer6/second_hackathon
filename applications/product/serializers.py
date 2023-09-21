@@ -3,12 +3,29 @@ from rest_framework import serializers
 from .models import Category, SpecName, Spec, Product, ProductImage
 
 
-class CategorySerializer(serializers.ModelSerializer):
+class CategoryListSerializer(serializers.ModelSerializer):
     slug = serializers.ReadOnlyField()
+    childs = serializers.SerializerMethodField()
 
     class Meta:
         model = Category
-        fields = "__all__"
+        fields = ('name', 'slug', 'parent', 'childs',)
+
+    def get_childs(self, obj):
+        return CategoryListSerializer(obj.get_children(), many=True).data
+
+
+class CategoryDetailSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Category
+        fields = ('name', 'slug', 'parent',)
+
+    def to_representation(self, instance):
+        rep = super().to_representation(instance)
+        rep.update({
+            'filters': SpecNameSerializer(SpecName.objects.filter(cat__in=instance.get_descendants(include_self=True)), many=True).data
+        })
+        return rep
 
 
 class SpecSerializer(serializers.ModelSerializer):
@@ -41,13 +58,21 @@ class ProductImageSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-class ProductSerializer(serializers.ModelSerializer):
-    slug = serializers.ReadOnlyField()
-    images = ProductImageSerializer(many=True)
+class ProductListSerializer(serializers.ModelSerializer):
+    images = ProductImageSerializer(many=True, read_only=True)
 
     class Meta:
         model = Product
-        fields = "__all__"
+        fields = ('name', 'price', 'slug', 'available', 'images')
+
+
+class ProductDetailSerializer(serializers.ModelSerializer):
+    slug = serializers.ReadOnlyField()
+    images = ProductImageSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Product
+        exclude = ('created_at', 'updated_at')
         extra_kwargs = {
             'specs': {'required': False}
         }
@@ -59,7 +84,13 @@ class ProductSerializer(serializers.ModelSerializer):
         })
         return rep
 
-    def validate(self, attrs):
-        if attrs.get('images', None):
-            serializers.ValidationError({'images': ['required']})
-        return attrs
+    def create(self, validated_data):
+        images = self.context.get('request').FILES.getlist('images')
+        product = super().create(validated_data)
+
+        if not images:
+            raise serializers.ValidationError({'images': 'Хотя бы одна фотография должна быть загружена'})
+
+        ProductImage.objects.bulk_create([ProductImage(product=product, image=image) for image in images])
+
+        return product

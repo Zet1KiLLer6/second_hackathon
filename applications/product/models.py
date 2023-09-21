@@ -1,13 +1,14 @@
 from django.db import models
+from mptt.models import MPTTModel, TreeForeignKey
 from core.utils import generate_unique_slug
 from core.models import CreatedUpdatedModelMixin
 
 
 # Create your models here.
-class Category(models.Model):
+class Category(MPTTModel):
     slug = models.SlugField(primary_key=True)
     name = models.CharField(max_length=127)
-    parent = models.ForeignKey('self', on_delete=models.CASCADE, related_name='childs', null=True, blank=True)
+    parent = TreeForeignKey('self', on_delete=models.CASCADE, related_name='childs', null=True, blank=True)
 
     def save(self, *args, **kwargs):
         if not self.slug:
@@ -55,6 +56,9 @@ class Product(CreatedUpdatedModelMixin):
     views = models.PositiveIntegerField(default=0)
     cat = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='products')
     specs = models.ManyToManyField(Spec, related_name='products', blank=True)
+
+    class Meta:
+        ordering = ['-created_at']
 
     def save(self, *args, **kwargs):
         if not self.slug:
