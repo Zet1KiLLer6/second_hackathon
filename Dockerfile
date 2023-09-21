@@ -1,4 +1,4 @@
-FROM python:3.10.12-slim-buster
+FROM python:3.10.12-alpine
 LABEL authors="ibral"
 
 WORKDIR /usr/src/app
@@ -10,9 +10,9 @@ RUN pip install --upgrade pip
 
 COPY ./requirements.txt .
 RUN pip install -r requirements.txt
-COPY ./entry.sh .
+COPY ./entrypoint.sh .
 
 COPY . .
 
-ENTRYPOINT ["/usr/src/app/entry.sh"]
-#CMD ["/usr/src/app/entry.sh"]
+ENTRYPOINT ["/usr/src/app/entrypoint.sh"]
+#CMD ["/usr/src/app/entrypoint.sh"]
