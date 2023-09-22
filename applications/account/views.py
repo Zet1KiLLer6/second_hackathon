@@ -1,11 +1,15 @@
 from rest_framework.authtoken.models import Token
+import random
 from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
-from applications.account.serializers import RegisterSerializer, ChangePasswordSerializer
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework import status
+from applications.account.serializers import RegisterSerializer, ChangePasswordSerializer, ForgotPasswordSerializer, ForgotPasswordResetSerializer
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from django.contrib.auth.models import User
+
+
+from applications.account.services import send_code_forgot_password
 
 User = get_user_model()
 
@@ -39,14 +43,26 @@ class ChangePasswordAPIView(APIView):
 
 
             if not user.check_password(old_password):
-                return Response({'detail': 'Старый пароль неверен'}, status=status.HTTP_400_BAD_REQUEST)
-
-
+                return Response('Старый пароль неверен', status=400)
             user.set_password(new_password)
             user.save()
 
-            return Response({'detail': 'Пароль успешно изменен'}, status=status.HTTP_200_OK)
+            return Response('Пароль успешно изменен', status=200)
 
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response(serializer.errors, status=400)
 
 
+class ForgotPasswordAPIView(APIView):
+    def post(self, request):
+        serializer = ForgotPasswordSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.send_code()
+        return Response('Код активации был отравлен на вашу почту')
+
+
+class ForgotPasswordResetAPIView(APIView):
+    def post(self, reqeust):
+        serializer = ForgotPasswordResetSerializer(data=reqeust.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.set_new_password()
+        return Response('Пароль был успешно изменен')
