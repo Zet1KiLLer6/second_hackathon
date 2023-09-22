@@ -1,6 +1,5 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model, authenticate
-
 from applications.account.services import send_activation_code
 
 User = get_user_model()
