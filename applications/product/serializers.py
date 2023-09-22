@@ -6,7 +6,6 @@ from ..feedback.serializers import LikeSerializer, CommentSerializer
 
 
 class CategoryListSerializer(serializers.ModelSerializer):
-    slug = serializers.ReadOnlyField()
     childs = serializers.SerializerMethodField()
 
     class Meta:
@@ -18,6 +17,8 @@ class CategoryListSerializer(serializers.ModelSerializer):
 
 
 class CategoryDetailSerializer(serializers.ModelSerializer):
+    slug = serializers.ReadOnlyField()
+
     class Meta:
         model = Category
         fields = ('name', 'slug', 'parent',)
