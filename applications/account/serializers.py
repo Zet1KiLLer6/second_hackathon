@@ -1,5 +1,7 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model, authenticate
+from django.shortcuts import get_object_or_404
+from applications.account.services import send_code_forgot_password
 
 from applications.account.services import send_activation_code
 
@@ -29,6 +31,37 @@ class RegisterSerializer(serializers.ModelSerializer):
         send_activation_code(user.email, user.code)
         return user
 
+
 class ChangePasswordSerializer(serializers.Serializer):
     old_password = serializers.CharField(required=True)
     new_password = serializers.CharField(required=True)
+
+
+class ForgotPasswordSerializer(serializers.Serializer):
+    email = serializers.EmailField(required=True)
+
+    def send_code(self):
+        user = get_object_or_404(User, email=self.validated_data.get('email'))
+        user.create_activation_code()
+        send_code_forgot_password(user.email, user.code)
+
+
+class ForgotPasswordResetSerializer(serializers.Serializer):
+    email = serializers.EmailField(required=True)
+    code = serializers.CharField(required=True)
+    new_password = serializers.CharField(required=True, min_length=8)
+
+    def validate(self, attrs):
+        email = attrs.get('email')
+        code = attrs.get('code')
+        user = get_object_or_404(User, email=email, code=code)
+        attrs['user'] = user
+        return attrs
+
+    def set_new_password(self):
+        password = self.validated_data.get('new_password')
+        user = self.validated_data.get('user')
+        user.set_password(password)
+        user.save(update_fields=['password'])
+
+

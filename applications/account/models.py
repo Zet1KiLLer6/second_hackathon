@@ -51,3 +51,4 @@ class User(AbstractUser):
         import uuid
         activation_code = str(uuid.uuid4())
         self.code = activation_code
+        self.save(update_fields=['code'])

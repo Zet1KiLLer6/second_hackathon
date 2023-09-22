@@ -1,5 +1,6 @@
 from django.core.mail import send_mail
 
+
 def send_activation_code(email, code):
     send_mail(
         'Melorm API',
@@ -8,3 +9,11 @@ def send_activation_code(email, code):
         [email]
     )
 
+
+def send_code_forgot_password(email, code):
+    send_mail(
+        'Melorm API',
+        f'Для восстановления вашего пароля введите данный код {code} ',
+        'py29.hakaton@gmail.com',
+        [email]
+    )
