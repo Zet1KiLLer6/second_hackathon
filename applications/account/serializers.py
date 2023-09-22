@@ -64,6 +64,6 @@ class ForgotPasswordResetSerializer(serializers.Serializer):
         password = self.validated_data.get('new_password')
         user = self.validated_data.get('user')
         user.set_password(password)
-        user.save(update_fields=['password'])
+        user.save()
 
 
