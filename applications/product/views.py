@@ -20,6 +20,9 @@ from .serializers import (CategoryListSerializer,
                           ProductDetailSerializer,
                           ProductListSerializer)
 
+from applications.feedback.models import (Like,
+                                          Rating)
+from applications.feedback.serializers import (RatingSerializer)
 
 # Create your views here.
 class CategoryAPIView(viewsets.ModelViewSet):
@@ -90,7 +93,24 @@ class ProductAPIView(mixins.ListModelMixin,
 
     @action(detail=True, methods=['GET'])
     def like(self, request: Request, *args, **kwargs) -> Response:
-        return Response('')
+        product = self.get_object()
+        like, _ = Like.objects.get_or_create(owner=request.user, product=product)
+        like.is_like = not like.is_like
+        like.save(update_fields=('is_like',))
+        if like.is_like:
+            return Response('like')
+        return Response('unlike')
+
+    @action(detail=True, methods=['POST'])
+    def rating(self, request: Request, *args, **kwargs) -> Response:
+        product = self.get_object()
+        rating, _ = Rating.objects.get_or_create(owner=self.request.user, product=product)
+        sz = RatingSerializer(instance=rating, data=request.data)
+        sz.is_valid(raise_exception=True)
+        sz.save()
+        return Response(sz.data)
+
+
 
     # Getters
     def get_queryset(self):
@@ -105,9 +125,9 @@ class ProductAPIView(mixins.ListModelMixin,
         if self.action == 'list':
             self.serializer_class = ProductListSerializer
         return super().get_serializer_class()
-    
+
     def get_permissions(self):
-        if self.action == 'like':
+        if self.action in ('like', 'rating'):
             self.permission_classes = [IsAuthenticated]
         return super().get_permissions()
 
