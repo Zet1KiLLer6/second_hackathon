@@ -2,7 +2,6 @@ from rest_framework import serializers
 from django.contrib.auth import get_user_model, authenticate
 from django.shortcuts import get_object_or_404
 from applications.account.services import send_code_forgot_password
-from django.contrib.auth import get_user_model
 
 # from applications.account.services import send_activation_code
 from applications.account.tasks import celery_send_activation_code
@@ -64,6 +63,6 @@ class ForgotPasswordResetSerializer(serializers.Serializer):
         password = self.validated_data.get('new_password')
         user = self.validated_data.get('user')
         user.set_password(password)
-        user.save(update_fields=['password'])
+        user.save()
 
 

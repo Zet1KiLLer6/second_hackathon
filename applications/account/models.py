@@ -35,7 +35,7 @@ class UserManager(UserManager):
 
 
 class User(AbstractUser):
-    email = models.EmailField(unique=True)
+    email = models.EmailField(unique=True, primary_key=True)
     code = models.CharField(max_length=40, blank=True)
     username = None
     is_active = models.BooleanField(default=False)
@@ -51,4 +51,4 @@ class User(AbstractUser):
         import uuid
         activation_code = str(uuid.uuid4())
         self.code = activation_code
-        self.save(update_fields=['code'])
+        self.save()
