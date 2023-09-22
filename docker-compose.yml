@@ -1,0 +1,61 @@
+version: '3.8'
+
+
+services:
+  redis:
+    image: redis:7.0.11-alpine
+  django:
+    container_name: djangorestframework
+    build:
+      context: ./
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/usr/src/app
+    ports:
+      - "8000:8000"
+    environment:
+      - SECRET_KEY=dfasi;dfasjdfhjklajsdkf;alsjdf;liowihofhdsf
+      - DEBUG=True
+      - ALLOWED_HOSTS=localhost,127.0.0.1
+
+      - DB_NAME=melornapi
+      - DB_USER=postgres
+      - DB_PASSWORD=1
+      - DB_HOST=db
+      - DB_PORT=5432
+
+      - EMAIL_HOST_USER=py29.hakaton@gmail.com
+      - EMAIL_HOST_PASSWORD=tptorbwqhmssqycf
+    depends_on:
+      - redis
+      - db
+  celery:
+    container_name: celery
+    build:
+      context: ./
+    command: celery -A config worker --loglevel=info
+    volumes:
+      - .:/usr/src/app
+    environment:
+      - SECRET_KEY=dfasi;dfasjdfhjklajsdkf;alsjdf;liowihofhdsf
+      - DEBUG=True
+      - ALLOWED_HOSTS=localhost,127.0.0.1
+
+      - DB_NAME=melornapi
+      - DB_USER=postgres
+      - DB_PASSWORD=1
+      - DB_HOST=db
+      - DB_PORT=5432
+
+      - EMAIL_HOST_USER=py29.hakaton@gmail.com
+      - EMAIL_HOST_PASSWORD=tptorbwqhmssqycf
+    depends_on:
+      - redis
+      - db
+
+  db:
+    image: postgres:15
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=1
+      - POSTGRES_DB=melornapi
