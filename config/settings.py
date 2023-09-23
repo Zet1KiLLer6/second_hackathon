@@ -190,6 +190,7 @@ LOGGING = {
             'class': 'logging.FileHandler',
             'filename': 'warning.log',
             'formatter': 'verbose',
+            'mode': 'w'
         },
     },
     'loggers': {
