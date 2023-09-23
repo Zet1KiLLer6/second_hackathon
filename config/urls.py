@@ -21,15 +21,14 @@ from django.conf.urls.static import static
 from drf_yasg import openapi
 from drf_yasg.views import get_schema_view
 
-
 schema_view = get_schema_view(
-   openapi.Info(
-      title='Melorn API',
-      default_version='v1',
-      description='Best Marketplace',
-      contact=openapi.Contact(email='py29.hakaton@gmail.com'),
-   ),
-   public=True,
+    openapi.Info(
+        title='Snippets Api',
+        default_version='v1',
+        description='Test description',
+        contact=openapi.Contact(email='contact.snippets.local')
+    ),
+    public=True
 )
 
 urlpatterns = [
@@ -40,4 +39,4 @@ urlpatterns = [
     path('swagger/', schema_view.with_ui('swagger')),
 ]
 
-urlpatterns+=static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
