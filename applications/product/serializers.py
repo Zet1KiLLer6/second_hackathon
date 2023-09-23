@@ -64,13 +64,11 @@ class ProductImageSerializer(serializers.ModelSerializer):
 class ProductListSerializer(serializers.ModelSerializer):
     images = ProductImageSerializer(many=True, read_only=True)
     likes = LikeSerializer(many=True, read_only=True)
-    owner = serializers.ReadOnlyField(source="owner.email")
-    comments = CommentSerializer(many=True, read_only=True)
     slug = serializers.ReadOnlyField()
 
     class Meta:
         model = Product
-        fields = ('name', 'price', 'slug', 'available', 'images')
+        fields = ('name', 'price', 'slug', 'available', 'images', 'likes')
 
 
 class ProductDetailSerializer(serializers.ModelSerializer):
