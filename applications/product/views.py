@@ -24,6 +24,7 @@ from applications.feedback.models import (Like,
                                           Rating)
 from applications.feedback.serializers import (RatingSerializer)
 
+
 # Create your views here.
 class CategoryAPIView(viewsets.ModelViewSet):
     queryset = Category.objects.all()
@@ -63,6 +64,7 @@ class SpecNameAPIView(viewsets.ModelViewSet):
 class SpecAPIView(viewsets.ModelViewSet):
     queryset = Spec.objects.all()
     serializer_class = SpecSerializer
+    permission_classes = [IsAdminOrReadOnly]
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
     filterset_fields = ['name']
     search_fields = ['value', 'name__name', 'name__cat__name']
@@ -81,7 +83,6 @@ class ProductAPIView(mixins.ListModelMixin,
     filterset_fields = ['cat']
     search_fields = ['slug', 'name', 'description', 'cat__name']
     ordering_fields = ['created']
-
 
     # Actions
     def retrieve(self, request: Request, *args, **kwargs) -> Response:
@@ -110,8 +111,6 @@ class ProductAPIView(mixins.ListModelMixin,
         sz.save()
         return Response(sz.data)
 
-
-
     # Getters
     def get_queryset(self):
         specs = self.request.query_params.get('specs')
@@ -130,4 +129,3 @@ class ProductAPIView(mixins.ListModelMixin,
         if self.action in ('like', 'rating'):
             self.permission_classes = [IsAuthenticated]
         return super().get_permissions()
-

@@ -9,6 +9,7 @@ class Category(MPTTModel):
     slug = models.SlugField(primary_key=True)
     name = models.CharField(max_length=127)
     parent = TreeForeignKey('self', on_delete=models.CASCADE, related_name='childs', null=True, blank=True)
+    recommend = models.ManyToManyField('self', related_name='categories',symmetrical=False, blank=True)
 
     def save(self, *args, **kwargs):
         if not self.slug:

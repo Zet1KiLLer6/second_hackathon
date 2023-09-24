@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from django.db.models import Avg
+from django.utils.text import slugify
 
 from .models import Category, SpecName, Spec, Product, ProductImage
 from ..feedback.serializers import LikeSerializer, CommentSerializer
@@ -21,7 +22,7 @@ class CategoryDetailSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Category
-        fields = ('name', 'slug', 'parent',)
+        fields = ('name', 'slug', 'parent', 'recommend')
 
     def to_representation(self, instance):
         rep = super().to_representation(instance)
@@ -45,6 +46,13 @@ class SpecSerializer(serializers.ModelSerializer):
         })
         return rep
 
+    def create(self, validated_data):
+        
+        instance = self.Meta.model.objects.filter(slug=slugify(f'{validated_data.get("name")} {validated_data.get("value")}', allow_unicode=True))
+        if instance:
+            return instance[0]
+        return super().create(validated_data)
+
 
 class SpecNameSerializer(serializers.ModelSerializer):
     slug = serializers.ReadOnlyField()
@@ -53,6 +61,12 @@ class SpecNameSerializer(serializers.ModelSerializer):
     class Meta:
         model = SpecName
         fields = "__all__"
+
+    def create(self, validated_data):
+        instance = self.Meta.model.objects.filter(slug=slugify(validated_data.get('name'), allow_unicode=True), cat=validated_data.get('cat'))
+        if instance:
+            return instance[0]
+        return super().create(validated_data)
 
 
 class ProductImageSerializer(serializers.ModelSerializer):
@@ -63,12 +77,19 @@ class ProductImageSerializer(serializers.ModelSerializer):
 
 class ProductListSerializer(serializers.ModelSerializer):
     images = ProductImageSerializer(many=True, read_only=True)
-    likes = LikeSerializer(many=True, read_only=True)
     slug = serializers.ReadOnlyField()
 
     class Meta:
         model = Product
         fields = ('name', 'price', 'slug', 'available', 'images', 'likes')
+
+    def to_representation(self, instance):
+        rep = super().to_representation(instance)
+        rep.update({
+            'rating': instance.ratings.aggregate(avg_rating=Avg('rating'))['avg_rating'],
+            'likes': instance.likes.filter(is_like=True).count()
+        })
+        return rep
 
 
 class ProductDetailSerializer(serializers.ModelSerializer):
@@ -87,7 +108,8 @@ class ProductDetailSerializer(serializers.ModelSerializer):
         rep.update({
             'specs': SpecSerializer(instance.specs.all(), many=True).data,
             'rating': instance.ratings.aggregate(avg_rating=Avg('rating'))['avg_rating'],
-            'likes': instance.likes.filter(is_like=True).count()
+            'likes': instance.likes.filter(is_like=True).count(),
+            'recommendations': ProductListSerializer(self.Meta.model.objects.filter(cat__in=instance.cat.recommend.all())[:10], many=True).data
         })
         return rep
 
