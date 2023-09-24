@@ -3,6 +3,7 @@ from applications.order.models import Order
 from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
 from applications.order.services import send_order_confirmed
+from rest_framework.response import Response
 
 
 User = get_user_model()
@@ -20,6 +21,7 @@ class OrderSerializer(serializers.Serializer):
         model = Order
         fields = '__all__'
 
-    def send_order_succesfully(self):
+    def create(self, validated_data):
         user = get_object_or_404(User, email=self.validated_data.get('email'))
-        send_order_confirmed(self.email, Order.order_number)
+        send_order_confirmed(user.email, Order.order_number)
+        return user

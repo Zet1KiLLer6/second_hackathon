@@ -32,16 +32,20 @@ class Order(models.Model):
 
     order_number = models.CharField('Номер заказа', max_length=6, unique=True, default='')
 
+    import random
+
+    def generate_order_number(self):
+        return ''.join(str(random.randint(1, 9)) for _ in range(6))
+
     def save(self, *args, **kwargs):
-        while True:
-            random_number = ''.join(str(random.randint(1, 9)) for _ in range(6))
-            if not Order.objects.filter(order_number=random_number).exists():
-                self.order_number = random_number
-                break
+        if not self.order_number:
+            while True:
+                random_number: object = self.generate_order_number()
+                if not Order.objects.filter(order_number=random_number).exists():
+                        self.order_number = random_number
+                        break
         super().save(*args, **kwargs)
-
-    print(order_number)
-
+        
     def __str__(self):
         return f'Заказ №{self.order_number}'
 
