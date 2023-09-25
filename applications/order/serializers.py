@@ -1,8 +1,8 @@
 from rest_framework import serializers
 from applications.order.models import Order
 from django.contrib.auth import get_user_model
-from applications.order.services import send_order_confirmed
 
+from .tasks import celery_send_order_confirmed
 from .models import OrderItem
 
 User = get_user_model()
@@ -28,7 +28,7 @@ class OrderSerializer(serializers.ModelSerializer):
         instance = super().create(validated_data)
         OrderItem.objects.bulk_create([OrderItem(order=instance, **order_item) for order_item in order_items])
 
-        send_order_confirmed(instance.user.email, instance.order_id)
+        celery_send_order_confirmed.delay(instance.user.email, instance.order_id)
         return instance
 
     def to_representation(self, instance):

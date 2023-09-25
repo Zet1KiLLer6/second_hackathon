@@ -1,10 +1,9 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model, authenticate
 from django.shortcuts import get_object_or_404
-from applications.account.services import send_code_forgot_password
 
 # from applications.account.services import send_activation_code
-from applications.account.tasks import celery_send_activation_code
+from applications.account.tasks import celery_send_activation_code, celery_send_code_forgot_password
 
 User = get_user_model()
 
@@ -44,7 +43,7 @@ class ForgotPasswordSerializer(serializers.Serializer):
     def send_code(self):
         user = get_object_or_404(User, email=self.validated_data.get('email'))
         user.create_activation_code()
-        send_code_forgot_password(user.email, user.code)
+        celery_send_code_forgot_password.delay(user.email, user.code)
 
 
 class ForgotPasswordResetSerializer(serializers.Serializer):
