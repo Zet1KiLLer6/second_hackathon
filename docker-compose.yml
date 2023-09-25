@@ -18,11 +18,13 @@ services:
       - DEBUG=True
       - ALLOWED_HOSTS=localhost,127.0.0.1
 
-      - DB_NAME=melornapi
-      - DB_USER=postgres
-      - DB_PASSWORD=1
+      - DB_NAME=melorn
+      - DB_USER=melorn
+      - DB_PASSWORD=verystringpass
       - DB_HOST=db
       - DB_PORT=5432
+      - HOST=localhost
+      - PORT=80
 
       - EMAIL_HOST_USER=py29.hakaton@gmail.com
       - EMAIL_HOST_PASSWORD=tptorbwqhmssqycf
@@ -41,11 +43,13 @@ services:
       - DEBUG=True
       - ALLOWED_HOSTS=localhost,127.0.0.1
 
-      - DB_NAME=melornapi
-      - DB_USER=postgres
-      - DB_PASSWORD=1
+      - DB_NAME=melorn
+      - DB_USER=melorn
+      - DB_PASSWORD=verystringpass
       - DB_HOST=db
       - DB_PORT=5432
+      - HOST=localhost
+      - PORT=80
 
       - EMAIL_HOST_USER=py29.hakaton@gmail.com
       - EMAIL_HOST_PASSWORD=tptorbwqhmssqycf
@@ -56,6 +60,6 @@ services:
   db:
     image: postgres:15
     environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=1
-      - POSTGRES_DB=melornapi
+      - POSTGRES_USER=melorn
+      - POSTGRES_PASSWORD=verystringpass
+      - POSTGRES_DB=melorn

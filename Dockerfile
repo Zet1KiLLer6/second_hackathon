@@ -15,4 +15,3 @@ COPY ./entrypoint.sh .
 COPY . .
 
 ENTRYPOINT ["/usr/src/app/entrypoint.sh"]
-#CMD ["/usr/src/app/entrypoint.sh"]
