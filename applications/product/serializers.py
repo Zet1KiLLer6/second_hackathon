@@ -120,6 +120,8 @@ class ProductDetailSerializer(serializers.ModelSerializer):
         if not images:
             raise serializers.ValidationError({'images': 'Хотя бы одна фотография должна быть загружена'})
 
+        ProductImage.objects.get
+
         ProductImage.objects.bulk_create([ProductImage(product=product, image=image) for image in images])
 
         return product
